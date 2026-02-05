@@ -40,8 +40,7 @@ class StreamPause(commands.Cog, name="Stream Pause"):
         )
 
         view = StreamPauseView(self)
-        await interaction.response.send_message(embed=embed, view=view)
-        message = await interaction.original_response()
+        message = await interaction.channel.send(embed=embed, view=view)
         self.bot.add_view(view, message_id=message.id)
 
         self.streampause_data = {
@@ -52,10 +51,11 @@ class StreamPause(commands.Cog, name="Stream Pause"):
         
         try:
             await message.pin()
-        except Exception:
+        except (discord.Forbidden, discord.HTTPException):
             pass
 
         await self.update_message(message, interaction.user.voice.channel)
+        await interaction.response.send_message("Streampause started!", ephemeral=True)
 
     async def attempt_to_finish_streampause(self, user: discord.Member, voice_channel: discord.VoiceChannel | None):
         """Attempt to end a streampause upon a change to either reactions or voice channel members."""
