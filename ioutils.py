@@ -1,4 +1,4 @@
-import json, os
+import json, logging, os
 from abc import ABC, abstractmethod
 from discord import Embed, Color
 import discord
@@ -57,10 +57,15 @@ async def initialize_from_json(bot: commands.Bot, settings_class: JsonSerializab
     for guild in bot.guilds:
         if read_json(guild.id, key) is None:
             write_json(guild.id, key, value={})
-        try:
-            guild_settings[guild.id] = {await settings_class.from_json(bot, json_str) for json_str in read_json(guild.id, key)}
-            guild_settings[guild.id] = {setting for setting in guild_settings[guild.id] if setting is not None} # Clean invalid entries before they cause errors later
-        except json.JSONDecodeError as e:
-            print(e)
-        except discord.errors.Forbidden as e:
-            print(e)
+        guild_settings[guild.id] = {await safe_initialize_object_from_json(bot, settings_class, json_str) for json_str in read_json(guild.id, key)}
+        guild_settings[guild.id] = {setting for setting in guild_settings[guild.id] if setting is not None} # Clean invalid entries before they cause errors later
+
+async def safe_initialize_object_from_json(bot: commands.Bot, settings_class: JsonSerializable, json_str: str) -> JsonSerializable | None:
+    """Initializes an object of type `settings_class` from a JSON string. 
+    If an error occurs or a property cannot be initialized, the function will log the error and return `None`."""
+
+    try:
+        return await settings_class.from_json(bot, json_str)
+    except (json.JSONDecodeError, discord.errors.Forbidden, discord.errors.NotFound) as e:
+        logging.error("Error initializing object from JSON: %s. JSON string: %s", e, json_str)
+        return None
