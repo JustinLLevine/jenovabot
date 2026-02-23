@@ -24,7 +24,7 @@ plugins:
     # Clients are queried in the order they are given (so the first client is queried first and so on...)
     clients:
       - TV
-      - TVHTML5EMBEDDED
+      - TVHTML5_SIMPLY
       - MUSIC
       - ANDROID_VR
       - WEB
