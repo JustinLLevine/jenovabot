@@ -23,11 +23,11 @@ plugins:
     # The clients to use for track loading. See below for a list of valid clients.
     # Clients are queried in the order they are given (so the first client is queried first and so on...)
     clients:
+      - WEB
       - TV
       - TVHTML5_SIMPLY
       - MUSIC
       - ANDROID_VR
-      - WEB
     # YouTube constantly changes a hidden code needed to play videos. 
     remoteCipher:
       url: "https://cipher.kikkia.dev/"
