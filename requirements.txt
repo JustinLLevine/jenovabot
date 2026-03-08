@@ -7,4 +7,4 @@ Pillow>=9.3.0
 python-Levenshtein>=0.20.9
 thefuzz>=0.19.0
 tzdata>=2023.3
-wavelink>=3.3.0
+wavelink @ git+https://github.com/atefcodes/Wavelink@main
