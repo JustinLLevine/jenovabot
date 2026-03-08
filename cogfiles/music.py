@@ -304,7 +304,7 @@ class Music(commands.GroupCog, group_name="music"):
         if not track:
             return await interaction.response.send_message("No track is currently playing.", ephemeral=True)
 
-        position = timedelta(milliseconds=player.position)
+        position = timedelta(seconds=player.position // 1000) # Using seconds instead of milliseconds to round down to the nearest second. This should be the only instance of a non-integer number of seconds
         duration = timedelta(milliseconds=track.length)
 
         formatted_position = f"Progress: {position}/{duration}"        
