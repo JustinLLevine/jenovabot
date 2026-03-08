@@ -304,8 +304,8 @@ class Music(commands.GroupCog, group_name="music"):
         if not track:
             return await interaction.response.send_message("No track is currently playing.", ephemeral=True)
 
-        position = timedelta(seconds=player.position // 1000)
-        duration = timedelta(seconds=track.length // 1000)
+        position = timedelta(milliseconds=player.position)
+        duration = timedelta(milliseconds=track.length)
 
         formatted_position = f"Progress: {position}/{duration}"        
         description = f"{await self.format_track(track)}\n{formatted_position}"
@@ -329,10 +329,14 @@ class Music(commands.GroupCog, group_name="music"):
         await interaction.response.send_message(embed=embed)
 
     async def format_track(self, track: wavelink.Playable):
-        return f"**[{track.title}]({track.uri})**\nRequested by {(await self.bot.fetch_user(track.extras.requester_id)).mention}"
+        return f"""**[{track.title}]({track.uri})**
+                Length: {timedelta(milliseconds=track.length)}
+                Requested by {(await self.bot.fetch_user(track.extras.requester_id)).mention}"""
     
     async def format_playlist(self, playlist: wavelink.Playlist, playlist_url: str):
-        return f"**[{playlist.name}]({playlist_url})** - {len(playlist.tracks)} tracks\nRequested by {(await self.bot.fetch_user(playlist[0].extras.requester_id)).mention}"
+        return f"""**[{playlist.name}]({playlist_url})** - {len(playlist.tracks)} tracks
+                Length: {timedelta(milliseconds=sum(t.length for t in playlist.tracks))}
+                Requested by {(await self.bot.fetch_user(playlist[0].extras.requester_id)).mention}"""
         # playlist.url defaults to None, so we have to pass in the playlist_url from play()
 
     @app_commands.command()
@@ -346,8 +350,8 @@ class Music(commands.GroupCog, group_name="music"):
         milliseconds = seconds*1000 + minutes*(60000) + hours*(3600000)
         await player.seek(milliseconds)
 
-        position = timedelta(seconds=milliseconds // 1000)
-        duration = timedelta(seconds=player.current.length // 1000)
+        position = timedelta(milliseconds=milliseconds)
+        duration = timedelta(milliseconds=player.current.length)
         formatted_position = f"Progress: {position}/{duration}" 
         description = f"{await self.format_track(player.current)}\n{formatted_position}"
         embed = RandomColorEmbed(title="Seeking", description=description)
