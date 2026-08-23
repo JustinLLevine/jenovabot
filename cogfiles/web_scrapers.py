@@ -1,4 +1,5 @@
 import aiohttp
+import base64
 import discord
 import json
 import os
@@ -17,8 +18,8 @@ from enum import Enum
 
 
 ITAD_API_KEY = os.getenv("ITAD_API_KEY")
-EBAY_TOKEN = os.getenv("EBAY_TOKEN")
 EBAY_APP_NAME = os.getenv("EBAY_APP_NAME")
+EBAY_CERT_ID = os.getenv("EBAY_CERT_ID")
 
 
 class AnilistSearchType(Enum):
@@ -267,7 +268,17 @@ class WebScrapers(commands.Cog, name="Web Scrapers"):
         """Search eBay for listings matching the provided search.
         This command retrives the first 5 results of a search on eBay."""
         async with aiohttp.ClientSession() as session:
-            headers = {"Authorization": f"Bearer {EBAY_TOKEN}", "Content-Type": "application/json"} 
+            # Generate fresh OAuth token
+            api = "https://api.ebay.com/identity/v1/oauth2/token"
+            basic_auth = base64.b64encode(f"{EBAY_APP_NAME}:{EBAY_CERT_ID}".encode()).decode()
+            headers = {"Content-Type": "application/x-www-form-urlencoded", "Authorization": f"Basic {basic_auth}"}
+            data = {"grant_type": "client_credentials", "scope": "https://api.ebay.com/oauth/api_scope"}
+            async with session.post(api, data=data, headers=headers) as response:
+                content = await response.read()
+                content = json.loads(content)
+                access_token = content["access_token"]
+
+            headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"} 
             api = f"https://api.ebay.com/buy/browse/v1/item_summary/search?q={search}&limit=5&filter=buyingOptions:{{AUCTION|FIXED_PRICE}}"
             async with session.get(api, headers=headers) as response:
                 content = await response.read()
@@ -278,7 +289,7 @@ class WebScrapers(commands.Cog, name="Web Scrapers"):
             return await interaction.response.send_message("Could not find any search results.", ephemeral=True)
 
         embed = RandomColorEmbed(title=f"eBay: {search}")
-        embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/EBay_logo.png/800px-EBay_logo.png")
+        embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/EBay_logo.svg/960px-EBay_logo.svg.png")
 
         description = ""
         # Iterate through the first 5 results, and extract information about each. 
