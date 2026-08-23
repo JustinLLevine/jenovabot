@@ -250,7 +250,7 @@ class WebScrapers(commands.Cog, name="Web Scrapers"):
                 store_name = game_deals["shop"]["name"]
                 game_url = game_deals["url"]
                     
-                description += f"**[{game_title}]({itad_url})**\n**${price_new}** ({price_cut}% Off)\n[{store_name}]({game_url})\n\n"
+                description += f"**[{game_title}]({itad_url})**\n**${price_new}** ({price_cut}% Off)\nBuy it here: **[{store_name}]({game_url})**\n\n"
 
                 valid_games += 1
                 if valid_games >= 5:
