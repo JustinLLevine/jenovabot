@@ -1,0 +1,65 @@
+[
+    {
+        "name": "Satoko",
+        "top": 4,
+        "right": 2,
+        "bottom": 7,
+        "left": 1
+    },
+    {
+        "name": "Rena",
+        "top": 3,
+        "right": 4,
+        "bottom": 3,
+        "left": 4
+    },
+    {
+        "name": "Mion",
+        "top": 2,
+        "right": 5,
+        "bottom": 3,
+        "left": 4
+    },
+        {
+        "name": "Shion",
+        "top": 3,
+        "right": 4,
+        "bottom": 2,
+        "left": 5
+    },
+    {
+        "name": "Rika",
+        "top": 3,
+        "right": 2,
+        "bottom": 2,
+        "left": 7
+    },
+    {
+        "name": "Keiichi",
+        "top": 5,
+        "right": 5,
+        "bottom": 2,
+        "left": 2
+    },
+    {
+        "name": "Ooishi",
+        "top": 6,
+        "right": 2,
+        "bottom": 3,
+        "left": 3
+    },
+    {
+        "name": "Battler",
+        "top": 1,
+        "right": 7,
+        "bottom": 3,
+        "left": 3
+    },
+    {
+        "name": "Beatrice",
+        "top": 1,
+        "right": 6,
+        "bottom": 1,
+        "left": 6
+    }
+]

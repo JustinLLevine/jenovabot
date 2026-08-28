@@ -1,12 +1,12 @@
 
 import asyncio
-import copy
+import json
 import random
 
 import discord
 from discord import app_commands
 from discord.ext import commands
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 from cogfiles.image_editing import temp_png
 from ioutils import RandomColorEmbed
@@ -15,19 +15,42 @@ CARD_COUNT = 5
 BOARD_SIZE = 3
 COLUMN_X_COORDINATES = (517, 837, 1157)
 COLUMN_Y_COORDINATES = (112, 433, 754)
-
+IMAGE_DIRECTORY = "triple_triad"
 
 class Card:
     """A card in Triple Triad."""
     
-    def __init__(self, name: str, background: Image.Image, top: int, right: int, bottom: int, left: int):
+    def __init__(self, name: str, top: int, right: int, bottom: int, left: int):
         self.name = name
-        self.background = background
         self.top = top
         self.right = right
         self.bottom = bottom
         self.left = left
-        self.color = "None"
+        self.level: int = 0
+        self.color: str | None = "None"
+
+    def draw(self) -> str:
+        """Create an image of this card, with player color and frame. Returns the name of the image file."""
+        image = Image.open(f"{IMAGE_DIRECTORY}/card-{self.color}.png")
+        card_image = Image.open(f"{IMAGE_DIRECTORY}/{self.name.lower()}.png")
+        image.paste(card_image, (0, 0), card_image)
+
+        top_rank_image = Image.open(f"{IMAGE_DIRECTORY}/rank-{self.top}.png")
+        image.paste(top_rank_image, (30, 10), top_rank_image)
+        right_rank_image = Image.open(f"{IMAGE_DIRECTORY}/rank-{self.right}.png")
+        image.paste(right_rank_image, (50, 30), right_rank_image)
+        bottom_rank_image = Image.open(f"{IMAGE_DIRECTORY}/rank-{self.bottom}.png")
+        image.paste(bottom_rank_image, (30, 50), bottom_rank_image)
+        left_rank_image = Image.open(f"{IMAGE_DIRECTORY}/rank-{self.left}.png")
+        image.paste(left_rank_image, (10, 30), left_rank_image)
+
+        frame = Image.open(f"{IMAGE_DIRECTORY}/frame-{self.level}.png")
+        image.paste(frame, (0, 0), frame)
+
+        with temp_png() as temp_file:
+            image_name = temp_file.name
+        image.save(image_name)
+        return image_name
 
 class Player:
     """A player in Triple Triad."""
@@ -64,13 +87,18 @@ class TripleTriadGame:
     @staticmethod
     def deal_cards(color: str) -> list[Card]:
         """Deal 5 random cards to a player, giving all of them a specific color."""
-        #with open("card_data.json", "r") as f:
-        #    card_data = json.load(f)
-        card_data = [Card("Satoko", Image.open("image_resources/satoko.png"), 1, 2, 3, 4)]
+        with open(f"{IMAGE_DIRECTORY}/cards.json", "r") as f:
+            card_data = json.load(f)
         cards = []
-        for _ in range(CARD_COUNT):
-            # Each dealt card needs its own color state. Reusing the template would mutate the shared card whenever another player is dealt it
-            card = copy.copy(random.choice(card_data))
+        levels = [0, 0, 1, 2, 3]
+        while levels:
+            level = levels.pop(0)
+            random_choice = random.choice(card_data)
+            card_data.remove(random_choice)
+            card = Card(**random_choice)
+            for attr in ("top", "right", "bottom", "left"):
+                setattr(card, attr, getattr(card, attr) + level) # Increase the card's stats based on its level
+            card.level = level
             card.color = color
             cards.append(card)
         return cards
@@ -102,18 +130,11 @@ class TripleTriadGame:
         """Draw a card on the board at the specified coordinates. First draw the card's background, then draw the card's character image, then draw the card's stats, then draw the card's frame."""
         x = COLUMN_X_COORDINATES[row]
         y = COLUMN_Y_COORDINATES[col]
-        player_color_image = Image.open(f"image_resources/card-{board_space.card.color}.png")
+        
         board_image = Image.open(self.board_image_filename)
-        board_image.paste(player_color_image, (x, y), player_color_image)
-        board_image.paste(board_space.card.background, (x, y), board_space.card.background)
-        draw = ImageDraw.Draw(board_image)
-        draw.font = ImageFont.truetype("image_resources/sazanami-gothic.ttf", 28)
-        draw.text((x + 30, y + 10), str(board_space.card.top), fill=(0, 0, 0))
-        draw.text((x + 50, y + 30), str(board_space.card.right), fill=(0, 0, 0))
-        draw.text((x + 30, y + 50), str(board_space.card.bottom), fill=(0, 0, 0))
-        draw.text((x + 10, y + 30), str(board_space.card.left), fill=(0, 0, 0))
-        frame = Image.open("image_resources/frame-4-character.png")
-        board_image.paste(frame, (x, y), frame)
+        card_image = Image.open(board_space.card.draw())
+        board_image.paste(card_image, (x, y), card_image)
+
         with temp_png() as temp_file:
             image_name = temp_file.name
         board_image.save(image_name)
@@ -140,13 +161,15 @@ class TripleTriadGame:
     async def end_game(self):
         """End the game and declare a winner."""
         player1_score = sum(1 for row in self.board for space in row if space.owner == self.player1)
+        player1_score += sum(1 for _ in self.player1.cards)
         player2_score = sum(1 for row in self.board for space in row if space.owner == self.player2)
+        player2_score += sum(1 for _ in self.player2.cards)
         if player1_score > player2_score:
             winner = self.player1
         elif player2_score > player1_score:
             winner = self.player2
         else:
-            await self.channel.send(f"The game is a tie! Both players have {player1_score} cards on the board.", file=discord.File(self.board_image_filename))
+            await self.channel.send(f"**It's a tie! {player1_score} - {player2_score}**", file=discord.File(self.board_image_filename))
             return
         await self.channel.send(f"**{winner.member.mention} wins {max(player1_score, player2_score)} - {min(player1_score, player2_score)}!**", file=discord.File(self.board_image_filename))
 
@@ -165,7 +188,6 @@ class ChallengeView(discord.ui.View):
             return await interaction.response.send_message("You are not the challenged player.", ephemeral=True)
         await interaction.response.defer()
         self.stop()
-        await self.message.delete()
         await self.bot.get_cog("tripletriad").start_game(interaction, self.user, self.opponent)
 
     @discord.ui.button(label="Decline", style=discord.ButtonStyle.red)
@@ -187,7 +209,8 @@ class TripleTriadView(discord.ui.View):
         if interaction.user not in (self.game.player1.member, self.game.player2.member):
             return await interaction.response.send_message("You are not a player in this game.", ephemeral=True)
         player = self.game.player1 if interaction.user == self.game.player1.member else self.game.player2
-        await interaction.response.send_message(view=CardHandView(self.game, player), ephemeral=True)
+        card_images = [discord.File(card.draw()) for card in player.cards]
+        await interaction.response.send_message(view=CardHandView(self.game, player), files=card_images, ephemeral=True)
 
     @discord.ui.button(label="Choose a space", style=discord.ButtonStyle.blurple, emoji="<:triple_triad:1541294408430002306>")
     async def select_space(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -206,6 +229,9 @@ class CardButton(discord.ui.Button):
         player = self.game.player1 if interaction.user == self.game.player1.member else self.game.player2
         if player != self.game.current_player:
             await interaction.response.send_message("It's not your turn.", ephemeral=True)
+            return
+        if self.card not in player.cards:
+            await interaction.response.send_message("You don't have that card.", ephemeral=True)
             return
         player.card_selected = self.card
         await interaction.response.send_message("👍", ephemeral=True, delete_after=2)
@@ -234,6 +260,11 @@ class BoardSpaceButton(discord.ui.Button):
         if player != self.game.current_player:
             await interaction.response.send_message("It's not your turn.", ephemeral=True)
             return
+        card_at_space = self.game.board[self.x][self.y].card
+        if card_at_space:
+            await interaction.response.send_message("That space is already occupied.", ephemeral=True)
+            return
+
         player.space_selected = (self.x, self.y)
         await interaction.response.send_message("👍", ephemeral=True, delete_after=2)
         if player.card_selected and player.space_selected:
@@ -265,9 +296,9 @@ class TripleTriad(commands.GroupCog, name="tripletriad"):
 
     async def start_game(self, interaction: discord.Interaction, player1: discord.Member, player2: discord.Member):
         """Start a game of Triple Triad between two players."""
-        image_file = discord.File("image_resources/board-mat.jpg", filename="board.png")
-        game = TripleTriadGame(Player(player1, TripleTriadGame.deal_cards("red")), Player(player2, TripleTriadGame.deal_cards("blue")), "image_resources/board-mat.jpg", interaction.channel)
+        image_file = discord.File(f"{IMAGE_DIRECTORY}/board-mat.jpg", filename="board.png")
+        game = TripleTriadGame(Player(player1, TripleTriadGame.deal_cards("red")), Player(player2, TripleTriadGame.deal_cards("blue")), f"{IMAGE_DIRECTORY}/board-mat.jpg", interaction.channel)
         view = TripleTriadView(game)
-        await interaction.channel.send(f"🎲 **And the first player is...**", file=image_file)
+        await interaction.channel.send(f"🎲 **And the first player is...**")
         await asyncio.sleep(1)
-        await interaction.channel.send(content=game.current_player.member.mention, view=view)
+        await interaction.channel.send(content=game.current_player.member.mention, file=image_file, view=view)
