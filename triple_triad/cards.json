@@ -1,10 +1,10 @@
 [
     {
         "name": "Satoko",
-        "top": 4,
+        "top": 5,
         "right": 2,
         "bottom": 7,
-        "left": 1
+        "left": 0
     },
     {
         "name": "Rena",
@@ -36,10 +36,10 @@
     },
     {
         "name": "Keiichi",
-        "top": 5,
-        "right": 5,
+        "top": 6,
+        "right": 6,
         "bottom": 2,
-        "left": 2
+        "left": 0
     },
     {
         "name": "Ooishi",
@@ -61,5 +61,54 @@
         "right": 6,
         "bottom": 1,
         "left": 6
+    },
+    {
+        "name": "George",
+        "top": 5,
+        "right": 1,
+        "bottom": 5,
+        "left": 3
+    },
+    {
+        "name": "Jessica",
+        "top": 6,
+        "right": 0,
+        "bottom": 3,
+        "left": 5
+    },
+    {
+        "name": "Maria",
+        "top": 0,
+        "right": 4,
+        "bottom": 6,
+        "left": 4
+    },
+        {
+        "name": "Bernkastel",
+        "top": 5,
+        "right": 1,
+        "bottom": 1,
+        "left": 7
+    },
+    {
+        "name": "Lambdadelta",
+        "top": 7,
+        "right": 0,
+        "bottom": 3,
+        "left": 4
+    },
+    {
+        "name": "Dlanor",
+        "top": 0,
+        "right": 4,
+        "bottom": 6,
+        "left": 4
+    },
+    {
+        "name": "Cooper",
+        "top": 3,
+        "right": 6,
+        "bottom": 2,
+        "left": 3
     }
 ]
