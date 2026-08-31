@@ -185,7 +185,7 @@ class ChallengeView(discord.ui.View):
     @discord.ui.button(label="Accept", style=discord.ButtonStyle.green)
     async def accept(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user != self.opponent:
-            return await interaction.response.send_message("You are not the challenged player.", ephemeral=True)
+            return await interaction.response.send_message("You are not the challenged player.", ephemeral=True, delete_after=5)
         await interaction.response.defer()
         self.stop()
         await self.bot.get_cog("tripletriad").start_game(interaction, self.user, self.opponent)
@@ -193,7 +193,7 @@ class ChallengeView(discord.ui.View):
     @discord.ui.button(label="Decline", style=discord.ButtonStyle.red)
     async def decline(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user != self.opponent:
-            return await interaction.response.send_message("You are not the challenged player.", ephemeral=True)
+            return await interaction.response.send_message("You are not the challenged player.", ephemeral=True, delete_after=5)
         await interaction.response.defer()
         self.stop()
         await self.message.delete()
@@ -207,17 +207,18 @@ class TripleTriadView(discord.ui.View):
     @discord.ui.button(label="Choose a card", style=discord.ButtonStyle.blurple, emoji="<:triple_triad:1541294408430002306>")
     async def deal_cards(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user not in (self.game.player1.member, self.game.player2.member):
-            return await interaction.response.send_message("You are not a player in this game.", ephemeral=True)
+            return await interaction.response.send_message("You are not a player in this game.", ephemeral=True, delete_after=5)
         player = self.game.player1 if interaction.user == self.game.player1.member else self.game.player2
         card_images = [discord.File(card.draw()) for card in player.cards]
-        await interaction.response.send_message(view=CardHandView(self.game, player), files=card_images, ephemeral=True)
+        await interaction.response.send_message(view=CardHandView(self.game, player, interaction), files=card_images, ephemeral=True)
 
     @discord.ui.button(label="Choose a space", style=discord.ButtonStyle.blurple, emoji="<:triple_triad:1541294408430002306>")
     async def select_space(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user not in (self.game.player1.member, self.game.player2.member):
-            return await interaction.response.send_message("You are not a player in this game.", ephemeral=True)
+            return await interaction.response.send_message("You are not a player in this game.", ephemeral=True, delete_after=5)
         player = self.game.player1 if interaction.user == self.game.player1.member else self.game.player2
-        await interaction.response.send_message(view=BoardSpacesView(self.game, player), ephemeral=True)
+        await interaction.response.send_message(view=BoardSpacesView(self.game, player, interaction), ephemeral=True)
+
 
 class CardButton(discord.ui.Button):
     def __init__(self, card: Card, game: TripleTriadGame):
@@ -228,20 +229,22 @@ class CardButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         player = self.game.player1 if interaction.user == self.game.player1.member else self.game.player2
         if player != self.game.current_player:
-            await interaction.response.send_message("It's not your turn.", ephemeral=True)
+            await interaction.response.send_message("It's not your turn.", ephemeral=True, delete_after=5)
             return
         if self.card not in player.cards:
-            await interaction.response.send_message("You don't have that card.", ephemeral=True)
+            await interaction.response.send_message("You don't have that card.", ephemeral=True, delete_after=5)
             return
         player.card_selected = self.card
-        await interaction.response.send_message("👍", ephemeral=True, delete_after=2)
+        await interaction.response.send_message("👍", ephemeral=True, delete_after=1)
+        await self.view.interaction.delete_original_response()
         if player.card_selected and player.space_selected:
             await self.game.move_to_next_turn()
 
 class CardHandView(discord.ui.View):
-    def __init__(self, game: TripleTriadGame, player: Player):
+    def __init__(self, game: TripleTriadGame, player: Player, interaction: discord.Interaction):
         self.game = game
         self.player = player
+        self.interaction = interaction
         super().__init__(timeout=None)
         for card in player.cards:
             self.add_item(CardButton(card, game))
@@ -258,22 +261,24 @@ class BoardSpaceButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         player = self.game.player1 if interaction.user == self.game.player1.member else self.game.player2
         if player != self.game.current_player:
-            await interaction.response.send_message("It's not your turn.", ephemeral=True)
+            await interaction.response.send_message("It's not your turn.", ephemeral=True, delete_after=5)
             return
         card_at_space = self.game.board[self.x][self.y].card
         if card_at_space:
-            await interaction.response.send_message("That space is already occupied.", ephemeral=True)
+            await interaction.response.send_message("That space is already occupied.", ephemeral=True,  delete_after=5)
             return
 
         player.space_selected = (self.x, self.y)
-        await interaction.response.send_message("👍", ephemeral=True, delete_after=2)
+        await interaction.response.send_message("👍", ephemeral=True, delete_after=1)
+        await self.view.interaction.delete_original_response()
         if player.card_selected and player.space_selected:
             await self.game.move_to_next_turn()
 
 class BoardSpacesView(discord.ui.View):
-    def __init__(self, game: TripleTriadGame, player: Player):
+    def __init__(self, game: TripleTriadGame, player: Player, interaction: discord.Interaction):
         self.game = game
         self.player = player
+        self.interaction = interaction
         super().__init__(timeout=None)
         for x in range(3):
             for y in range(3):
