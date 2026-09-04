@@ -29,6 +29,13 @@ class Card:
         self.level: int = 0
         self.color: str | None = "None"
 
+    def set_level(self, level: int):
+        """Set the card's level and apply +x to all stats, where x is the level."""
+        old_level = self.level
+        self.level = level
+        for attr in ("top", "right", "bottom", "left"):
+            setattr(self, attr, getattr(self, attr) + (level - old_level)) # Increase the card's stats based on its level
+
     def draw(self) -> str:
         """Create an image of this card, with player color and frame. Returns the name of the image file."""
         image = Image.open(f"{IMAGE_DIRECTORY}/card-{self.color}.png")
@@ -36,13 +43,13 @@ class Card:
         image.paste(card_image, (0, 0), card_image)
 
         top_rank_image = Image.open(f"{IMAGE_DIRECTORY}/rank-{self.top}.png")
-        image.paste(top_rank_image, (30, 10), top_rank_image)
+        image.paste(top_rank_image, (33, 10), top_rank_image)
         right_rank_image = Image.open(f"{IMAGE_DIRECTORY}/rank-{self.right}.png")
-        image.paste(right_rank_image, (50, 30), right_rank_image)
+        image.paste(right_rank_image, (56, 33), right_rank_image)
         bottom_rank_image = Image.open(f"{IMAGE_DIRECTORY}/rank-{self.bottom}.png")
-        image.paste(bottom_rank_image, (30, 50), bottom_rank_image)
+        image.paste(bottom_rank_image, (33, 56), bottom_rank_image)
         left_rank_image = Image.open(f"{IMAGE_DIRECTORY}/rank-{self.left}.png")
-        image.paste(left_rank_image, (10, 30), left_rank_image)
+        image.paste(left_rank_image, (10, 33), left_rank_image)
 
         frame = Image.open(f"{IMAGE_DIRECTORY}/frame-{self.level}.png")
         image.paste(frame, (0, 0), frame)
@@ -96,9 +103,7 @@ class TripleTriadGame:
             random_choice = random.choice(card_data)
             card_data.remove(random_choice)
             card = Card(**random_choice)
-            for attr in ("top", "right", "bottom", "left"):
-                setattr(card, attr, getattr(card, attr) + level) # Increase the card's stats based on its level
-            card.level = level
+            card.set_level(level)
             card.color = color
             cards.append(card)
         return cards
@@ -289,15 +294,37 @@ class TripleTriad(commands.GroupCog, name="tripletriad"):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.bot.tree.add_command(app_commands.ContextMenu(name="Wanna play cards?", callback=self.send_challenge)) # You can't use @app_commands.context_menu() in a cog
 
     @app_commands.command()
     @app_commands.guild_only()
     async def challenge(self, interaction: discord.Interaction, opponent: discord.Member):
         """Challenge another player to a game of Triple Triad."""
+        await self.send_challenge(interaction, opponent)
+
+    async def send_challenge(self, interaction: discord.Interaction, opponent: discord.Member):
+        """Challenge another player to a game of Triple Triad."""
         embed = RandomColorEmbed(title="Triple Triad Challenge", description=f"{interaction.user.mention} has challenged {opponent.mention} to a game of Triple Triad!")
         view = ChallengeView(self.bot, interaction.user, opponent, None)
         message = await interaction.response.send_message(content=opponent.mention, embed=embed, view=view)
         view.message = message.resource
+
+    @app_commands.command()
+    async def card(self, interaction: discord.Interaction, name: str):
+        """View an image of a card."""
+        with open(f"{IMAGE_DIRECTORY}/cards.json", "r") as f:
+            card_data = json.load(f)
+        card = next((Card(**card) for card in card_data if card["name"].lower() == name.lower()), None)
+        if not card:
+            await interaction.response.send_message("Unable to find a card with this name.", ephemeral=True)
+            return
+        card.color = "gray"
+
+        files = []
+        for i in range(4):
+            card.set_level(i)
+            files.append(discord.File(card.draw()))
+        await interaction.response.send_message(files=files)
 
     async def start_game(self, interaction: discord.Interaction, player1: discord.Member, player2: discord.Member):
         """Start a game of Triple Triad between two players."""
