@@ -169,14 +169,12 @@ class TripleTriadGame:
         player1_score += sum(1 for _ in self.player1.cards)
         player2_score = sum(1 for row in self.board for space in row if space.owner == self.player2)
         player2_score += sum(1 for _ in self.player2.cards)
-        if player1_score > player2_score:
-            winner = self.player1
-        elif player2_score > player1_score:
-            winner = self.player2
-        else:
+        winner = self.player1 if player1_score > player2_score else self.player2 if player2_score > player1_score else None
+        if not winner:
             await self.channel.send(f"**It's a tie! {player1_score} - {player2_score}**", file=discord.File(self.board_image_filename))
             return
-        await self.channel.send(f"**{winner.member.mention} wins {max(player1_score, player2_score)} - {min(player1_score, player2_score)}!**", file=discord.File(self.board_image_filename))
+        loser = self.player1 if winner == self.player2 else self.player2
+        await self.channel.send(f"**{winner.member.mention} wins against {loser.member.mention} {max(player1_score, player2_score)} - {min(player1_score, player2_score)}!**", file=discord.File(self.board_image_filename))
 
 class ChallengeView(discord.ui.View):
 
