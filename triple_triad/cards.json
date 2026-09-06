@@ -1,0 +1,331 @@
+[
+    {
+        "name": "Satoko",
+        "top": 5,
+        "right": 2,
+        "bottom": 7,
+        "left": 0
+    },
+    {
+        "name": "Rena",
+        "top": 3,
+        "right": 4,
+        "bottom": 3,
+        "left": 4
+    },
+    {
+        "name": "Mion",
+        "top": 2,
+        "right": 5,
+        "bottom": 3,
+        "left": 4
+    },
+        {
+        "name": "Shion",
+        "top": 3,
+        "right": 4,
+        "bottom": 2,
+        "left": 5
+    },
+    {
+        "name": "Rika",
+        "top": 3,
+        "right": 2,
+        "bottom": 2,
+        "left": 7
+    },
+    {
+        "name": "Keiichi",
+        "top": 6,
+        "right": 6,
+        "bottom": 2,
+        "left": 0
+    },
+    {
+        "name": "Ooishi",
+        "top": 6,
+        "right": 2,
+        "bottom": 3,
+        "left": 3
+    },
+    {
+        "name": "Battler",
+        "top": 1,
+        "right": 7,
+        "bottom": 3,
+        "left": 3
+    },
+    {
+        "name": "Beatrice",
+        "top": 1,
+        "right": 6,
+        "bottom": 1,
+        "left": 6
+    },
+    {
+        "name": "George",
+        "top": 5,
+        "right": 1,
+        "bottom": 5,
+        "left": 3
+    },
+    {
+        "name": "Jessica",
+        "top": 6,
+        "right": 0,
+        "bottom": 3,
+        "left": 5
+    },
+    {
+        "name": "Maria",
+        "top": 0,
+        "right": 4,
+        "bottom": 7,
+        "left": 3
+    },
+        {
+        "name": "Bernkastel",
+        "top": 5,
+        "right": 1,
+        "bottom": 1,
+        "left": 7
+    },
+    {
+        "name": "Lambdadelta",
+        "top": 7,
+        "right": 0,
+        "bottom": 3,
+        "left": 4
+    },
+    {
+        "name": "Dlanor",
+        "top": 4,
+        "right": 0,
+        "bottom": 6,
+        "left": 4
+    },
+    {
+        "name": "Cooper",
+        "top": 3,
+        "right": 6,
+        "bottom": 2,
+        "left": 3
+    },
+    {
+        "name": "Laura",
+        "top": 4,
+        "right": 7,
+        "bottom": 3,
+        "left": 0
+    },
+    {
+        "name": "Shiki",
+        "top": 7,
+        "right": 0,
+        "bottom": 7,
+        "left": 0
+    },
+        {
+        "name": "Arcueid",
+        "top": 1,
+        "right": 4,
+        "bottom": 5,
+        "left": 4
+    },
+        {
+        "name": "Ciel",
+        "top": 5,
+        "right": 1,
+        "bottom": 6,
+        "left": 2
+    },
+        {
+        "name": "Akiha",
+        "top": 1,
+        "right": 5,
+        "bottom": 1,
+        "left": 7
+    },
+        {
+        "name": "Hisui",
+        "top": 6,
+        "right": 1,
+        "bottom": 4,
+        "left": 3
+    },
+    {
+        "name": "Kohaku",
+        "top": 4,
+        "right": 3,
+        "bottom": 6,
+        "left": 1
+    },
+    {
+        "name": "Shirou",
+        "top": 1,
+        "right": 7,
+        "bottom": 2,
+        "left": 4
+    },
+    {
+        "name": "Saber",
+        "top": 4,
+        "right": 3,
+        "bottom": 3,
+        "left": 4
+    },
+    {
+        "name": "Rin",
+        "top": 2,
+        "right": 3,
+        "bottom": 3,
+        "left": 6
+    },
+    {
+        "name": "Sakura",
+        "top": 1,
+        "right": 5,
+        "bottom": 2,
+        "left": 6
+    },
+    {
+        "name": "Illya",
+        "top": 1,
+        "right": 5,
+        "bottom": 3,
+        "left": 5
+    },
+    {
+        "name": "Kotomine",
+        "top": 7,
+        "right": 4,
+        "bottom": 3,
+        "left": 0
+    },
+    {
+        "name": "Aoko",
+        "top": 3,
+        "right": 3,
+        "bottom": 5,
+        "left": 3
+    },
+    {
+        "name": "Alice",
+        "top": 4,
+        "right": 2,
+        "bottom": 6,
+        "left": 2
+    },
+    {
+        "name": "Soujuurou",
+        "top": 2,
+        "right": 4,
+        "bottom": 7,
+        "left": 1
+    },
+    {
+        "name": "Sigurd",
+        "top": 1,
+        "right": 1,
+        "bottom": 6,
+        "left": 6
+    },
+    {
+        "name": "Alvis",
+        "top": 1,
+        "right": 6,
+        "bottom": 3,
+        "left": 4
+    },
+    {
+        "name": "Takuji",
+        "top": 5,
+        "right": 5,
+        "bottom": 2,
+        "left": 2
+    },
+    {
+        "name": "Yuki",
+        "top": 2,
+        "right": 2,
+        "bottom": 5,
+        "left": 5
+    },
+    {
+        "name": "Zakuro",
+        "top": 3,
+        "right": 5,
+        "bottom": 3,
+        "left": 3
+    },
+    {
+        "name": "Fei",
+        "top": 5,
+        "right": 6,
+        "bottom": 2,
+        "left": 1
+    },
+    {
+        "name": "Elly",
+        "top": 4,
+        "right": 6,
+        "bottom": 2,
+        "left": 2
+    },
+    {
+        "name": "Shinji",
+        "top": 2,
+        "right": 7,
+        "bottom": 0,
+        "left": 5
+    },
+    {
+        "name": "Rei",
+        "top": 3,
+        "right": 5,
+        "bottom": 1,
+        "left": 5
+    },
+    {
+        "name": "Asuka",
+        "top": 6,
+        "right": 2,
+        "bottom": 2,
+        "left": 6
+    },
+    {
+        "name": "Misato",
+        "top": 5,
+        "right": 2,
+        "bottom": 2,
+        "left": 5
+    },
+    {
+        "name": "Cloud",
+        "top": 4,
+        "right": 2,
+        "bottom": 7,
+        "left": 1
+    },
+    {
+        "name": "Tifa",
+        "top": 5,
+        "right": 3,
+        "bottom": 3,
+        "left": 3
+    },
+    {
+        "name": "Aerith",
+        "top": 4,
+        "right": 1,
+        "bottom": 4,
+        "left": 5
+    },
+    {
+        "name": "Sephiroth",
+        "top": 0,
+        "right": 7,
+        "bottom": 1,
+        "left": 6
+    }
+]
