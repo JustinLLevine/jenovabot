@@ -27,7 +27,7 @@ class Card:
         self.bottom = bottom
         self.left = left
         self.level: int = 0
-        self.color: str | None = "None"
+        self.color: str | None = None
 
     def set_level(self, level: int):
         """Set the card's level and apply +x to all stats, where x is the level."""
