@@ -35,7 +35,7 @@ plugins:
 lavalink:
   plugins:
     - dependency: "dev.lavalink.youtube:youtube-plugin:${YOUTUBE_PLUGIN_VERSION}" # Use the latest version at https://github.com/lavalink-devs/youtube-source/releases
-      snapshot: false # Set to true if you want to use a snapshot version.
+      snapshot: true # Set to true if you want to use a snapshot version.
       youtube:
         enabled: true # Whether this source can be used.
         allowSearch: true # Whether "ytsearch:" and "ytmsearch:" can be used.
